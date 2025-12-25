@@ -1,5 +1,7 @@
 package generic
 
+import "fmt"
+
 type BaseService[T any] struct {
 	repo *BaseRepository[T]
 }
@@ -16,25 +18,27 @@ func (s *BaseService[T]) Create(input *T) (*T, error) {
 }
 
 func (s *BaseService[T]) Get(id uint) (*T, error) {
-	inst, err := s.repo.Get(id)
+	entity, err := s.repo.Get(id)
 	if err != nil {
 		return nil, err
 	}
-	return inst, nil
+	return entity, nil
 }
 
 func (s *BaseService[T]) List() ([]T, error) {
 	return s.repo.List()
 }
 
-func (s *BaseService[T]) Update(id uint, input *T) (*T, error) {
+func (s *BaseService[T]) Update(id uint, data map[string]any) (*T, error) {
+
 	if _, err := s.repo.Get(id); err != nil {
 		return nil, err
 	}
-	if err := s.repo.Update(input); err != nil {
+	fmt.Println(data)
+	if err := s.repo.Update(id, &data); err != nil {
 		return nil, err
 	}
-	return input, nil
+	return s.repo.Get(id)
 }
 
 func (s *BaseService[T]) Delete(id uint) error {

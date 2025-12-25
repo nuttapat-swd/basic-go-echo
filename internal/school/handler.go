@@ -64,12 +64,12 @@ func (h *SchoolHandler) Update(c echo.Context) error {
 	if convErr != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid school id"})
 	}
-	req := new(School)
-	if err := c.Bind(req); err != nil {
+	req := make(map[string]any)
+	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request"})
 	}
 
-	req.ID = uint(id)
+	req["id"] = id
 	updatedSchool, err := h.service.Update(uint(id), req)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})

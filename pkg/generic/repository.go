@@ -28,8 +28,9 @@ func (r *BaseRepository[T]) List() ([]T, error) {
 	return entities, err
 }
 
-func (r *BaseRepository[T]) Update(entity *T) error {
-	return r.db.Save(entity).Error
+func (r *BaseRepository[T]) Update(id uint, data *map[string]any) error {
+	var entity T
+	return r.db.Model(&entity).Where("id = ?", id).Updates(*data).Error
 }
 
 func (r *BaseRepository[T]) Delete(id uint) error {
