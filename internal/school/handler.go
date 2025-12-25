@@ -26,7 +26,7 @@ func (h *SchoolHandler) Create(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request"})
 	}
 
-	school, err := h.service.CreateSchool(req.Name, req.ShortName, req.Address)
+	school, err := h.service.Create(req)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
@@ -36,7 +36,7 @@ func (h *SchoolHandler) Create(c echo.Context) error {
 
 // Get /schools
 func (h *SchoolHandler) List(c echo.Context) error {
-	schools, err := h.service.ListSchools()
+	schools, err := h.service.List()
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
@@ -50,7 +50,7 @@ func (h *SchoolHandler) Get(c echo.Context) error {
 	if convErr != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid school id"})
 	}
-	school, err := h.service.GetSchool(uint(id))
+	school, err := h.service.Get(uint(id))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
@@ -68,7 +68,9 @@ func (h *SchoolHandler) Update(c echo.Context) error {
 	if err := c.Bind(req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request"})
 	}
-	updatedSchool, err := h.service.UpdateSchool(uint(id), req.Name, req.ShortName, req.Address)
+
+	req.ID = uint(id)
+	updatedSchool, err := h.service.Update(uint(id), req)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
@@ -82,7 +84,7 @@ func (h *SchoolHandler) Delete(c echo.Context) error {
 	if convErr != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid school id"})
 	}
-	err := h.service.DeleteSchool(uint(id))
+	err := h.service.Delete(uint(id))
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return c.JSON(http.StatusNotFound, map[string]string{"error": "School not found"})
