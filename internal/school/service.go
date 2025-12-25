@@ -7,7 +7,7 @@ type SchoolService struct {
 }
 
 func NewSchoolService(repo *SchoolRepository) *SchoolService {
-	baseService := generic.NewService[School](repo.BaseRepository)
+	baseService := generic.NewService(repo.BaseRepository)
 	return &SchoolService{
 		BaseService: baseService,
 	}
