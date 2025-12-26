@@ -1,44 +1,29 @@
 package school
 
-import "gorm.io/gorm"
+import (
+	"go_poc/pkg/generic"
+
+	"gorm.io/gorm"
+)
 
 type SchoolRepository struct {
-	db *gorm.DB
+	*generic.BaseRepository[School]
+}
+
+type ClassroomRepository struct {
+	*generic.BaseRepository[Classroom]
 }
 
 func NewSchoolRepository(db *gorm.DB) *SchoolRepository {
-	return &SchoolRepository{db: db}
-}
-
-func (r *SchoolRepository) Create(school *School) error {
-	return r.db.Create(school).Error
-}
-
-func (r *SchoolRepository) List() ([]School, error) {
-	var schools []School
-	err := r.db.Find(&schools).Error
-	return schools, err
-}
-
-func (r *SchoolRepository) Get(id uint) (*School, error) {
-	var school School
-	if err := r.db.First(&school, id).Error; err != nil {
-		return nil, err
+	baseRepo := generic.NewBaseRepository[School](db)
+	return &SchoolRepository{
+		BaseRepository: baseRepo,
 	}
-	return &school, nil
 }
 
-func (r *SchoolRepository) Update(school *School) error {
-	return r.db.Save(school).Error
-}
-
-func (r *SchoolRepository) Delete(id uint) error {
-	result := r.db.Delete(&School{}, id)
-	if result.Error != nil {
-		return result.Error
+func NewClassroomRepository(db *gorm.DB) *ClassroomRepository {
+	baseRepo := generic.NewBaseRepository[Classroom](db)
+	return &ClassroomRepository{
+		BaseRepository: baseRepo,
 	}
-	if result.RowsAffected == 0 {
-		return gorm.ErrRecordNotFound
-	}
-	return nil
 }
