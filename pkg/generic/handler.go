@@ -14,7 +14,7 @@ type BaseHandler[T any] struct {
 	service *BaseService[T]
 }
 
-func NewBaseHandle[T any](service *BaseService[T]) *BaseHandler[T] {
+func NewBaseHandler[T any](service *BaseService[T]) *BaseHandler[T] {
 	return &BaseHandler[T]{service: service}
 }
 
