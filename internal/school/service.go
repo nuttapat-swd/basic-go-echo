@@ -63,12 +63,22 @@ func (s *ClassroomService) List() ([]Classroom, error) {
 		return nil, err
 	}
 
+	schools, err := s.schoolRepo.List()
+	if err != nil {
+		return nil, err
+	}
+
+	schoolByID := make(map[uint]School, len(schools))
+	for _, school := range schools {
+		schoolByID[school.ID] = school
+	}
+
 	for i, entity := range classrooms {
-		school, err := s.schoolRepo.Get(entity.SchoolID)
-		if err != nil {
-			return nil, err
+		school, ok := schoolByID[entity.SchoolID]
+		if !ok {
+			return nil, ErrSchoolInvalid
 		}
-		classrooms[i].School = *school
+		classrooms[i].School = school
 	}
 	return classrooms, nil
 }

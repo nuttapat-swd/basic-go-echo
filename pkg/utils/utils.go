@@ -6,11 +6,18 @@ import (
 	"reflect"
 )
 
-func Pprint(v any) {
-	prettyString, _ := json.MarshalIndent(v, "", "  ")
-	fmt.Printf("%s: %s\n", reflect.TypeOf(v).Name(), prettyString)
+func GetTypeName(v any) string {
+	if v == nil {
+		return ""
+	}
+	return reflect.TypeOf(v).Name()
 }
 
-func GetTypeName(v any) string {
-	return reflect.TypeOf(v).Name()
+func Pprint(v any) {
+	prettyString, err := json.MarshalIndent(v, "", "  ")
+	if err != nil {
+		fmt.Printf("error pretty-printing %s: %v\n", reflect.TypeOf(v).Name(), err)
+		return
+	}
+	fmt.Printf("%s: %s\n", GetTypeName(v), prettyString)
 }

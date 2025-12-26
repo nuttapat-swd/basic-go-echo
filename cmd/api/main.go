@@ -12,6 +12,7 @@ import (
 func main() {
 	// Instance Echo
 	e := echo.New()
+	e.Pre(middleware.RemoveTrailingSlash())
 
 	// Middleware
 	e.Use(middleware.RequestLogger())

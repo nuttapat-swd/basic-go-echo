@@ -1,7 +1,5 @@
 package generic
 
-import "fmt"
-
 type BaseService[T any] struct {
 	repo *BaseRepository[T]
 }
@@ -34,7 +32,6 @@ func (s *BaseService[T]) Update(id uint, data map[string]any) (*T, error) {
 	if _, err := s.repo.Get(id); err != nil {
 		return nil, err
 	}
-	fmt.Println(data)
 	if err := s.repo.Update(id, &data); err != nil {
 		return nil, err
 	}

@@ -4,7 +4,6 @@ import (
 	"go_poc/pkg/generic"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -14,8 +13,8 @@ type SchoolHandler struct {
 }
 
 func NewSchoolHandler(service *SchoolService) *SchoolHandler {
-	baseHandl := generic.NewBaseHandler(service.BaseService)
-	return &SchoolHandler{BaseHandler: baseHandl}
+	baseHandler := generic.NewBaseHandler(service.BaseService)
+	return &SchoolHandler{BaseHandler: baseHandler}
 }
 
 type ClassroomHandler struct {
@@ -51,8 +50,8 @@ func (h *ClassroomHandler) List(c echo.Context) error {
 }
 
 func (h *ClassroomHandler) Get(c echo.Context) error {
-	idParan := strings.Trim(c.Param("id"), "/")
-	id, convErr := strconv.Atoi(idParan)
+	idParam := c.Param("id")
+	id, convErr := strconv.Atoi(idParam)
 	if convErr != nil {
 		return c.JSON(
 			http.StatusBadRequest,
@@ -70,8 +69,8 @@ func (h *ClassroomHandler) Get(c echo.Context) error {
 }
 
 func (h *ClassroomHandler) Update(c echo.Context) error {
-	idParan := strings.Trim(c.Param("id"), "/")
-	id, convErr := strconv.Atoi(idParan)
+	idParam := c.Param("id")
+	id, convErr := strconv.Atoi(idParam)
 	if convErr != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid classroom id"})
 	}
@@ -80,8 +79,6 @@ func (h *ClassroomHandler) Update(c echo.Context) error {
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request"})
 	}
-
-	req["id"] = id
 	entity, err := h.srv.Update(uint(id), req)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})

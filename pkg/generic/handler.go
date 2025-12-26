@@ -32,7 +32,7 @@ func (h *BaseHandler[T]) Create(c echo.Context) error {
 
 	entity, err := h.service.Create(req)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 
 	return c.JSON(http.StatusCreated, entity)
@@ -41,27 +41,27 @@ func (h *BaseHandler[T]) Create(c echo.Context) error {
 func (h *BaseHandler[T]) List(c echo.Context) error {
 	entities, err := h.service.List()
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 	return c.JSON(http.StatusOK, entities)
 }
 
 func (h *BaseHandler[T]) Get(c echo.Context) error {
-	idParan := strings.Trim(c.Param("id"), "/")
-	id, convErr := strconv.Atoi(idParan)
+	idParam := c.Param("id")
+	id, convErr := strconv.Atoi(idParam)
 	if convErr != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid " + strings.ToLower(h.GetTypeName()) + " id"})
 	}
 	entity, err := h.service.Get(uint(id))
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 	return c.JSON(http.StatusOK, entity)
 }
 
 func (h *BaseHandler[T]) Update(c echo.Context) error {
-	idParan := strings.Trim(c.Param("id"), "/")
-	id, convErr := strconv.Atoi(idParan)
+	idParam := c.Param("id")
+	id, convErr := strconv.Atoi(idParam)
 	if convErr != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid " + strings.ToLower(h.GetTypeName()) + " id"})
 	}
@@ -70,19 +70,17 @@ func (h *BaseHandler[T]) Update(c echo.Context) error {
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request"})
 	}
-
-	req["id"] = id
 	entity, err := h.service.Update(uint(id), req)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 
 	return c.JSON(http.StatusOK, entity)
 }
 
 func (h *BaseHandler[T]) Delete(c echo.Context) error {
-	idParan := strings.Trim(c.Param("id"), "/")
-	id, convErr := strconv.Atoi(idParan)
+	idParam := c.Param("id")
+	id, convErr := strconv.Atoi(idParam)
 	if convErr != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid " + strings.ToLower(h.GetTypeName()) + " id"})
 	}
@@ -90,9 +88,9 @@ func (h *BaseHandler[T]) Delete(c echo.Context) error {
 	err := h.service.Delete(uint(id))
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			return c.JSON(http.StatusNotFound, map[string]string{"error": strings.Title(strings.ToLower(h.GetTypeName())) + " not found"})
+			return c.JSON(http.StatusNotFound, map[string]string{"error": strings.ToLower(h.GetTypeName()) + " not found"})
 		}
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 	return c.NoContent(http.StatusNoContent)
 }
