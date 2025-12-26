@@ -23,18 +23,30 @@ func main() {
 		log.Fatal("Failed to connect to database", err)
 	}
 
+	// School module setup
 	schoolRepo := school.NewSchoolRepository(db)
 	schoolService := school.NewSchoolService(schoolRepo)
 	schoolHandler := school.NewSchoolHandler(schoolService)
 
-	// Routes
-	api_v1 := e.Group("api/v1")
+	// Classroom module setup
+	classroomRepo := school.NewClassroomRepository(db)
+	classroomService := school.NewClassroomService(classroomRepo, schoolRepo)
+	classroomHandler := school.NewClassroomHandler(classroomService)
 
-	api_v1.GET("/schools", schoolHandler.List)
-	api_v1.GET("/schools/:id", schoolHandler.Get)
-	api_v1.POST("/schools", schoolHandler.Create)
-	api_v1.PUT("/schools/:id", schoolHandler.Update)
-	api_v1.DELETE("/schools/:id", schoolHandler.Delete)
+	// Routes
+	router := e.Group("api/v1")
+
+	router.GET("/schools", schoolHandler.List)
+	router.GET("/schools/:id", schoolHandler.Get)
+	router.POST("/schools", schoolHandler.Create)
+	router.PUT("/schools/:id", schoolHandler.Update)
+	router.DELETE("/schools/:id", schoolHandler.Delete)
+
+	router.GET("/classrooms", classroomHandler.List)
+	router.GET("/classrooms/:id", classroomHandler.Get)
+	router.POST("/classrooms", classroomHandler.Create)
+	router.PUT("/classrooms/:id", classroomHandler.Update)
+	router.DELETE("/classrooms/:id", classroomHandler.Delete)
 
 	// Server
 	e.Logger.Fatal(e.Start(":8080"))
